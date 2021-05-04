@@ -1,6 +1,7 @@
 const express= require('express');
 const router = express.Router();
 const User=require('../models/user');
+const bcrypt=  require('bcrypt');
 
 // router.post('/signin',(req,res)={
 
@@ -9,7 +10,7 @@ const User=require('../models/user');
 
 router.post('/signup',(req,res)=>{
     User.findOne({ email: req.body.email})
-    .exec((error,user)=>{
+    .exec(async (error,user)=>{
         if(user) return res.status(400).json({
             message: 'User already registered'
         });
@@ -22,18 +23,22 @@ router.post('/signup',(req,res)=>{
             email,
             password
         }=req.body;
+        const hash_password = await bcrypt.hash(password, 10);  
+         console.log( hash_password);
         const _user=new User({
             firstName,
             lastName,
             email,
-            password,
+            hash_password,
+            //password,
             username: Math.random().toString()     
            });
            _user.save((error,data)=>{
                if(error)
                {
                    return res.status(400).json({
-                       message: 'Something went wrong'
+                       message: error
+                       
                    });
                }
                if(data){
