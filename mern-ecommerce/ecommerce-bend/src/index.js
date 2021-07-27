@@ -1,40 +1,41 @@
-const express= require ('express');
-const env = require('dotenv');
+const express = require("express");
+const env = require("dotenv");
 const app = express();
-const bodyParser = require('body-parser');
-const mongoose= require('mongoose');
 
-const userRoutes = require('./routes/user');
+const mongoose = require("mongoose");
+const path = require("path");
+const cors = require("cors");
+
+const authRoutes = require("./routes/auth");
+const adminRoutes = require("./routes/admin/auth");
+const categoryRoutes = require("./routes/category");
+const productRoutes = require("./routes/product");
+const cartRoutes = require("./routes/cart");
 
 env.config();
- //mongodb connection
- //mongodb+srv://root:<qazwsxedc>@cluster0.wklx1.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
- mongoose.connect(
-     `mongodb+srv://${process.env.MONGO_DB_USER}:${process.env.MONGO_DB_PASSWORD}@cluster0.wklx1.mongodb.net/${process.env.MONGO_DB_DATABASE}?retryWrites=true&w=majority`,
-      {
-          useNewUrlParser: true,
-           useUnifiedTopology: true,
-           useCreateIndex:true
-        }
-        ).then(()=>{
-            console.log('Database connected');
-        });
-
+//mongodb connection
+//mongodb+srv://root:<qazwsxedc>@cluster0.wklx1.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
+mongoose
+  .connect(
+    `mongodb+srv://${process.env.MONGO_DB_USER}:${process.env.MONGO_DB_PASSWORD}@cluster0.wklx1.mongodb.net/${process.env.MONGO_DB_DATABASE}?retryWrites=true&w=majority`,
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useCreateIndex: true,
+    }
+  )
+  .then(() => {
+    console.log("Database connected");
+  });
+app.use(cors());
 app.use(express.json());
-// app.get('/',(req,res,next)=>{
-// res.status(200).json({
-//     message: 'Hello from server'
-// });
-// });
+app.use("/public", express.static(path.join(__dirname, "uploads")));
+app.use("/api", authRoutes);
+app.use("/api", adminRoutes);
+app.use("/api", categoryRoutes);
+app.use("/api", productRoutes);
+app.use("/api", cartRoutes);
 
-// app.post('/data',(req,res,next)=>{
-//     res.status(200).json({
-//         message: req.body
-//     });
-//     });
-
-app.use('/api',userRoutes);
-
-app.listen(process.env.PORT,()=>{
-    console.log(`Server running on port ${process.env.PORT}`);
+app.listen(process.env.PORT, () => {
+  console.log(`Server running on port ${process.env.PORT}`);
 });

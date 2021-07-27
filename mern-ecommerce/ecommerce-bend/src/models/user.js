@@ -47,22 +47,12 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// userSchema.virtual('password')
-// .set( (password)=>{
-//     //this.hash_password = bcrypt.hashSync(password, 10);
-//     console.log(password)
-//     console.log(this.hash_password)
-//      bcrypt.hash(password, 10, function(err, hash) {
-//       // Store hash in your password DB.
-//       this.hash_password=hash;
-//     console.log(err)
 
-//   });
-// });
 
-// userSchema.virtual("fullName").get(function () {
-//   return `${this.firstName} ${this.lastName}`;
-// });
+userSchema.virtual("fullName")
+.get(function () {
+  return `${this.firstName} ${this.lastName}`;
+});
 
 userSchema.methods = {
   authenticate: function (password) {
